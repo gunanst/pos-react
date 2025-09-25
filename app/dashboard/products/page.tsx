@@ -20,12 +20,10 @@ export default async function ProductsPage() {
                         </span>
                         <div className="flex gap-2">
                             <EditProductButton product={p} updateAction={updateProduct} />
-                            <form
-                                action={async () => {
-                                    "use server";
-                                    await deleteProduct(p.id);
-                                }}
-                            >
+                            <form action={async () => {
+                                "use server";
+                                await deleteProduct(p.id);
+                            }}>
                                 <button className="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
                             </form>
                         </div>

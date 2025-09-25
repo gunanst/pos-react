@@ -1,3 +1,4 @@
+// AddProductButton.tsx
 "use client";
 
 import { useState } from "react";
@@ -34,7 +35,9 @@ export default function AddProductButton({
                     <input type="number" name="price" placeholder="Harga" className="border px-2 py-1" required />
                     <input type="number" name="stock" placeholder="Stok" className="border px-2 py-1" required />
                     {message && <p className="text-red-500 text-sm">{message}</p>}
-                    <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">Simpan</button>
+                    <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">
+                        Simpan
+                    </button>
                 </form>
             </Modal>
         </>
