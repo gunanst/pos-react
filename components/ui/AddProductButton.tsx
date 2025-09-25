@@ -30,15 +30,16 @@ export default function AddProductButton({
                         else setOpen(false);
                     }}
                     className="flex flex-col gap-2"
+                    encType="multipart/form-data"
                 >
                     <input name="name" placeholder="Nama produk" className="border px-2 py-1" required />
                     <input type="number" name="price" placeholder="Harga" className="border px-2 py-1" required />
                     <input type="number" name="stock" placeholder="Stok" className="border px-2 py-1" required />
+                    <input type="file" name="image" accept="image/*" className="border px-2 py-1" />
                     {message && <p className="text-red-500 text-sm">{message}</p>}
-                    <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">
-                        Simpan
-                    </button>
+                    <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">Simpan</button>
                 </form>
+
             </Modal>
         </>
     );

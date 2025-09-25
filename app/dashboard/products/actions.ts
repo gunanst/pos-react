@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import fs from "fs";
+import path from "path";
 
 function validateProduct(name: string, price: number, stock: number): string | null {
   if (!name || name.length < 3) return "Nama minimal 3 huruf";
@@ -12,38 +14,87 @@ function validateProduct(name: string, price: number, stock: number): string | n
 
 // CREATE
 export async function addProduct(formData: FormData) {
-  const name = formData.get("name") as string;
+  const name = formData.get("name")?.toString() || "";
   const price = Number(formData.get("price"));
   const stock = Number(formData.get("stock"));
+  const imageFile = formData.get("image") as File | null;
 
   const error = validateProduct(name, price, stock);
   if (error) return { error };
 
-  await prisma.product.create({ data: { name, price, stock } });
-  revalidatePath("/products");
+  let imagePath: string | null = null;
+
+  if (imageFile && imageFile.size > 0) {
+    const fileName = `${Date.now()}-${imageFile.name}`;
+    const dir = path.join(process.cwd(), "public", "uploads");
+
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    const arrayBuffer = await imageFile.arrayBuffer();
+    fs.writeFileSync(path.join(dir, fileName), Buffer.from(arrayBuffer));
+    imagePath = `/uploads/${fileName}`;
+  }
+
+  await prisma.product.create({
+    data: {
+      name,
+      price,
+      stock,
+      image: imagePath,
+    },
+  });
+
+  // Revalidate halaman produk agar update realtime
+  revalidatePath("/dashboard/products");
+
   return { success: "Produk berhasil ditambahkan" };
 }
 
 // UPDATE
 export async function updateProduct(id: number, formData: FormData) {
-  const name = formData.get("name") as string;
+  const name = formData.get("name")?.toString() || "";
   const price = Number(formData.get("price"));
   const stock = Number(formData.get("stock"));
+  const imageFile = formData.get("image") as File | null;
 
   const error = validateProduct(name, price, stock);
   if (error) return { error };
 
+  let imagePath: string | undefined = undefined;
+
+  // Jika ada file baru diupload, simpan
+  if (imageFile && imageFile.size > 0) {
+    const fileName = `${Date.now()}-${imageFile.name}`;
+    const dir = path.join(process.cwd(), "public", "uploads");
+
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    const arrayBuffer = await imageFile.arrayBuffer();
+    fs.writeFileSync(path.join(dir, fileName), Buffer.from(arrayBuffer));
+    imagePath = `/uploads/${fileName}`;
+  }
+
   await prisma.product.update({
     where: { id },
-    data: { name, price, stock },
+    data: {
+      name,
+      price,
+      stock,
+      ...(imagePath ? { image: imagePath } : {}), // update image hanya jika ada
+    },
   });
-  revalidatePath("/products");
+
+  revalidatePath("/dashboard/products");
+
   return { success: "Produk berhasil diupdate" };
 }
+
 
 // DELETE
 export async function deleteProduct(id: number) {
   await prisma.product.delete({ where: { id } });
-  revalidatePath("/products");
+
+  revalidatePath("/dashboard/products");
+
   return { success: "Produk berhasil dihapus" };
 }
