@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getDashboardData } from "./actions";
 import DashboardCard from "./ui/DashboardCard";
 import SalesBarChart from "./ui/SalesChart";
@@ -12,10 +13,10 @@ export default async function DashboardPage() {
             <aside className="w-64 bg-white shadow-lg flex flex-col">
                 <div className="p-6 text-xl font-bold border-b">POS Starterkit</div>
                 <nav className="flex-1 p-4 space-y-2">
-                    <a href="#" className="block p-2 rounded hover:bg-gray-200">Dashboard</a>
-                    <a href="#" className="block p-2 rounded hover:bg-gray-200">Produk</a>
-                    <a href="#" className="block p-2 rounded hover:bg-gray-200">Kasir</a>
-                    <a href="#" className="block p-2 rounded hover:bg-gray-200">Laporan</a>
+                    <Link href="/dashboard" className="block p-2 rounded hover:bg-gray-200">Dashboard</Link>
+                    <Link href="/products" className="block p-2 rounded hover:bg-gray-200">Produk</Link>
+                    <Link href="/sales" className="block p-2 rounded hover:bg-gray-200">Kasir</Link>
+                    <Link href="/sales/history" className="block p-2 rounded hover:bg-gray-200">Laporan</Link>
                 </nav>
                 <div className="p-6 border-t text-sm text-gray-500">v1.0.0</div>
             </aside>
