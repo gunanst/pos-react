@@ -1,2 +1,9 @@
-# Atur line endings untuk semua file teks
+# .gitattributes
 * text=auto
+
+# Optional: enforce LF for specific file types
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.js text eol=lf

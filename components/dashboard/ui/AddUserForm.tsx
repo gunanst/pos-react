@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createUserAction } from "../users/actions";
+import { createUserAction } from "../../../app/actions/users/actions";
 
 export default function AddUserForm() {
   const [message, setMessage] = useState<string | null>(null);

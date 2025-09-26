@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
-import { requireAdmin } from "./../../../lib/auth-roles";
+import { requireAdmin } from "../../../lib/auth-roles";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 

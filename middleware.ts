@@ -6,40 +6,49 @@ import { jwtVerify } from "jose";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Izinkan akses login & API tanpa token
-  if (pathname.startsWith("/login") || pathname.startsWith("/api")) {
-    return NextResponse.next();
-  }
+  // ✅ Izinkan akses ke halaman publik (login, API, static files)
+  const publicPaths = [
+    "/login",
+    "/api",
+    "/_next",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/uploads"
+  ];
 
-  // Ambil token dari cookie
+  const isPublic = publicPaths.some((path) => pathname.startsWith(path));
+  if (isPublic) return NextResponse.next();
+
+  // ✅ Ambil token dari cookie
   const token = req.cookies.get("pos_session")?.value;
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   try {
-    // Verify JWT pakai jose
+    // ✅ Verifikasi token
     const { payload } = await jwtVerify(
       token,
-      new TextEncoder().encode(process.env.JWT_SECRET!),
+      new TextEncoder().encode(process.env.JWT_SECRET!)
     );
 
-    // Role-based access
-    // Kasir hanya boleh akses /sales
-    if (payload.role === "KASIR" && !pathname.startsWith("/sales")) {
+    const role = payload.role as string;
+
+    // ✅ Jika role KASIR tapi akses selain /sales, redirect
+    if (role === "KASIR" && !pathname.startsWith("/sales")) {
       return NextResponse.redirect(new URL("/sales", req.url));
     }
 
-    // Admin bisa akses semua (tidak ada redirect)
+    return NextResponse.next();
   } catch {
-    // Token invalid atau expired → redirect login
     return NextResponse.redirect(new URL("/login", req.url));
   }
-
-  return NextResponse.next();
 }
 
-// Route yang perlu proteksi
+// ✅ Proteksi semua halaman utama, kecuali path publik
 export const config = {
-  matcher: ["/dashboard/:path*", "/sales/:path*", "/products/:path*"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|login|robots.txt|sitemap.xml|uploads).*)"
+  ],
 };

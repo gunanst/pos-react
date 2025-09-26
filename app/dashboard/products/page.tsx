@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { addProduct, updateProduct, deleteProduct } from "./actions";
-import AddProductButton from "@/components/ui/AddProductButton";
-import EditProductButton from "@/components/ui/EditProductButton";
+import { addProduct, updateProduct, deleteProduct } from "@/app/actions/products/actions";
+import AddProductButton from "@/components/dashboard/products/AddProductButton";
+import EditProductButton from "@/components/dashboard/products/EditProductButton";
 import Image from 'next/image';
 
 export default async function ProductsPage() {

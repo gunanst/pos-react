@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, startTransition } from "react";
-import { createSaleAction } from "../actions";
+import { createSaleAction } from "../../../../app/actions/sales/actions";
 
 type Product = {
   id: number;

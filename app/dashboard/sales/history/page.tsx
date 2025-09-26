@@ -1,6 +1,6 @@
-import { getSalesHistory } from "../actions";
+import { getSalesHistory } from "../../../actions/sales/actions";
 import { Suspense } from "react";
-import SalesHistoryTable from "./sales-history-table";
+import SalesHistoryTable from "../../../../components/dashboard/sales/history/sales-history-table";
 
 export default async function SalesHistoryPage({
     searchParams,

@@ -1,7 +1,7 @@
-import DashboardCard from "./ui/DashboardCard";
-import SalesBarChart from "./ui/SalesChart";
-import { getDashboardData, getCurrentUser } from "./actions"; // ambil user & data dashboard
-import Checkout from "./sales/ui/Checkout";
+import DashboardCard from "../../components/dashboard/ui/DashboardCard";
+import SalesBarChart from "../../components/dashboard/ui/SalesChart";
+import { getDashboardData, getCurrentUser } from "../actions/dashboard/actions"; // ambil user & data dashboard
+import Checkout from "../../components/dashboard/sales/ui/Checkout";
 
 export default async function DashboardPage() {
   // Ambil data dashboard

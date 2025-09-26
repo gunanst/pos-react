@@ -1,5 +1,5 @@
 // lib/auth-roles.ts
-import { getCurrentUser } from "@/app/dashboard/users/actions";
+import { getCurrentUser } from "@/app/actions/users/actions";
 export type UserRole = "ADMIN" | "KASIR";
 
 export const ROLES = {

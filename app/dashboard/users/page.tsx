@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import AddUserForm from "../ui/AddUserForm";
+import AddUserForm from "../../../components/dashboard/ui/AddUserForm";
 
 export default async function UsersPage() {
   const users = await prisma.user.findMany({

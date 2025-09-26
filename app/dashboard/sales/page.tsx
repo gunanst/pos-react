@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import Checkout from "./ui/Checkout";
-import { getCurrentUser } from "./actions"; // pastikan pathnya sesuai
+import Checkout from "../../../components/dashboard/sales/ui/Checkout";
+import { getCurrentUser } from "../../actions/sales/actions"; // pastikan pathnya sesuai
 
 export default async function SalesPage() {
   const products = await prisma.product.findMany();
