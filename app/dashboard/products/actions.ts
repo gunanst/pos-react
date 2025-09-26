@@ -5,7 +5,11 @@ import { revalidatePath } from "next/cache";
 import fs from "fs";
 import path from "path";
 
-function validateProduct(name: string, price: number, stock: number): string | null {
+function validateProduct(
+  name: string,
+  price: number,
+  stock: number,
+): string | null {
   if (!name || name.length < 3) return "Nama minimal 3 huruf";
   if (price < 0) return "Harga tidak valid";
   if (stock < 0) return "Stok tidak boleh negatif";
@@ -88,7 +92,6 @@ export async function updateProduct(id: number, formData: FormData) {
 
   return { success: "Produk berhasil diupdate" };
 }
-
 
 // DELETE
 export async function deleteProduct(id: number) {

@@ -1,21 +1,45 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
-export function middleware(req: NextRequest) {
-    const path = req.nextUrl.pathname;
+// Middleware untuk proteksi route
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-    // izinkan akses login dan api
-    if (path.startsWith("/login") || path.startsWith("/api")) return NextResponse.next();
+  // Izinkan akses login & API tanpa token
+  if (pathname.startsWith("/login") || pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
 
-    const cookie = req.cookies.get("pos_session")?.value;
-    if (!cookie) {
-        const loginUrl = new URL("/login", req.url);
-        return NextResponse.redirect(loginUrl);
+  // Ambil token dari cookie
+  const token = req.cookies.get("pos_session")?.value;
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  try {
+    // Verify JWT pakai jose
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWT_SECRET!),
+    );
+
+    // Role-based access
+    // Kasir hanya boleh akses /sales
+    if (payload.role === "KASIR" && !pathname.startsWith("/sales")) {
+      return NextResponse.redirect(new URL("/sales", req.url));
     }
 
-    return NextResponse.next();
+    // Admin bisa akses semua (tidak ada redirect)
+  } catch {
+    // Token invalid atau expired → redirect login
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  return NextResponse.next();
 }
 
+// Route yang perlu proteksi
 export const config = {
-    matcher: ["/dashboard/:path*", "/sales/:path*", "/products/:path*"], // route yg perlu proteksi
+  matcher: ["/dashboard/:path*", "/sales/:path*", "/products/:path*"],
 };
