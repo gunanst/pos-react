@@ -1,32 +1,30 @@
 import { getSalesHistory } from "../../../actions/sales/actions";
 import { Suspense } from "react";
 import SalesHistoryTable from "../../../../components/dashboard/sales/history/sales-history-table";
+import { headers } from "next/headers";
 
-export default async function SalesHistoryPage({
-    searchParams,
-}: {
-    searchParams?: { from?: string; to?: string };
-}) {
-    const from = searchParams?.from ? new Date(searchParams.from) : undefined;
-    const to = searchParams?.to ? new Date(searchParams.to) : undefined;
+export default async function SalesHistoryPage() {
+    const headersList = await headers();
+    const url = new URL(headersList.get("x-url") || "", "http://localhost");
+
+    const fromParam = url.searchParams.get("from") || "";
+    const toParam = url.searchParams.get("to") || "";
+
+    const from = fromParam ? new Date(fromParam) : undefined;
+    const to = toParam ? new Date(toParam) : undefined;
 
     const sales = await getSalesHistory(from, to);
 
-    // Hitung total omzet & total produk terjual
     const grandTotal = sales.reduce(
         (sum, sale) =>
             sum +
-            sale.items.reduce(
-                (sub, i) => sub + i.product.price * i.quantity,
-                0
-            ),
+            sale.items.reduce((sub, i) => sub + i.product.price * i.quantity, 0),
         0
     );
 
     const totalQty = sales.reduce(
         (sum, sale) =>
-            sum +
-            sale.items.reduce((sub, i) => sub + i.quantity, 0),
+            sum + sale.items.reduce((sub, i) => sub + i.quantity, 0),
         0
     );
 
@@ -38,13 +36,13 @@ export default async function SalesHistoryPage({
                 <input
                     type="date"
                     name="from"
-                    defaultValue={searchParams?.from || ""}
+                    defaultValue={fromParam}
                     className="border p-2 rounded"
                 />
                 <input
                     type="date"
                     name="to"
-                    defaultValue={searchParams?.to || ""}
+                    defaultValue={toParam}
                     className="border p-2 rounded"
                 />
                 <button
@@ -61,7 +59,7 @@ export default async function SalesHistoryPage({
 
             <div className="mt-6 p-4 border rounded bg-gray-100">
                 <p className="text-lg font-semibold">
-                    Total Penjualan: Rp{grandTotal}
+                    Total Penjualan: Rp{grandTotal.toLocaleString("id-ID")}
                 </p>
                 <p className="text-lg font-semibold">
                     Jumlah Produk Terjual: {totalQty}
