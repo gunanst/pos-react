@@ -1,12 +1,17 @@
-import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth";
+import { prisma } from "../lib/prisma.js";
+import { hashPassword } from "../lib/auth.js";
 
 async function main() {
   // Admin
   const adminPassword = await hashPassword("admin123");
   await prisma.user.upsert({
     where: { email: "admin@pos.com" },
-    update: {},
+    update: {
+      // jika user sudah ada, update nama / password misalnya
+      name: "Admin POS",
+      password: adminPassword,
+      role: "ADMIN"
+    },
     create: {
       name: "Admin POS",
       email: "admin@pos.com",
@@ -19,7 +24,11 @@ async function main() {
   const kasirPassword = await hashPassword("kasir123");
   await prisma.user.upsert({
     where: { email: "kasir@pos.com" },
-    update: {},
+    update: {
+      name: "Kasir POS",
+      password: kasirPassword,
+      role: "KASIR"
+    },
     create: {
       name: "Kasir POS",
       email: "kasir@pos.com",
@@ -33,7 +42,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("Seed error:", e);
     process.exit(1);
   })
   .finally(async () => {

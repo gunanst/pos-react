@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import AddUserForm from "../../../components/dashboard/ui/AddUserForm";
+import UsersTable from "./UserTable";
 
 export default async function UsersPage() {
   const users = await prisma.user.findMany({
@@ -12,26 +13,8 @@ export default async function UsersPage() {
 
       <AddUserForm />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse mt-4">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border px-2 py-1">Nama</th>
-              <th className="border px-2 py-1">Email</th>
-              <th className="border px-2 py-1">Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className="hover:bg-gray-50 transition">
-                <td className="border px-2 py-1">{u.name}</td>
-                <td className="border px-2 py-1">{u.email}</td>
-                <td className="border px-2 py-1">{u.role}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Pass users ke client component */}
+      <UsersTable users={users} />
     </div>
   );
 }

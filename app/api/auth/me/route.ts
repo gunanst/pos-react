@@ -1,10 +1,11 @@
-import { NextResponse, NextRequest } from "next/server";
+// app/api/auth/me/route.ts
+
+import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
-
-    const token = req.cookies.get("pos_session")?.value;  // ini sudah benar untuk NextRequest
+    const token = req.cookies.get("pos_session")?.value;
 
     if (!token) {
         return NextResponse.json({ user: null }, { status: 401 });

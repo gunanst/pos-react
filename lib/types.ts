@@ -28,3 +28,11 @@ export type SaleItem = {
         image: string | null;
     };
 };
+
+export type User = {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+};
