@@ -14,3 +14,8 @@ export type ReceiptData = {
     datetime: string;
     receiptNumber: string;
 };
+
+export type ReceiptModalProps = {
+    receiptData: ReceiptData;
+    onClose: () => void;
+};

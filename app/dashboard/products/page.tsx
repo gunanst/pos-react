@@ -78,7 +78,7 @@ export default async function ProductsPage() {
             <div className="flex items-center gap-4">
               {p.image ? (
                 <Image
-                  src={p.image}
+                  src={p.image} //url
                   alt={p.name}
                   width={64}
                   height={64}

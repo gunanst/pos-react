@@ -1,20 +1,5 @@
 import React from "react";
-
-type CartItem = { id: number; name: string; price: number; qty: number };
-
-type CheckoutModalProps = {
-    cart: CartItem[];
-    cashierName: string;
-    total: number;
-    cash: number;
-    change: number;
-    message: string | null;
-    updateQty: (id: number, qty: number) => void;
-    removeFromCart: (id: number) => void;
-    setCash: (cash: number) => void;
-    handleCheckout: () => void;
-    onClose: () => void;
-};
+import { CheckoutModalProps } from "@/lib/types";
 
 export default function CheckoutModal({
     cart,

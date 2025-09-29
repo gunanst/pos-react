@@ -1,20 +1,5 @@
 import React from "react";
-import { ReceiptItem } from "@/lib/receipt";
-
-type ReceiptData = {
-    items: ReceiptItem[];
-    total: number;
-    cash: number;
-    change: number;
-    cashierName: string;
-    datetime: string;
-    receiptNumber: string;
-};
-
-type ReceiptModalProps = {
-    receiptData: ReceiptData;
-    onClose: () => void;
-};
+import { ReceiptModalProps } from "@/lib/receipt";
 
 export default function ReceiptModal({ receiptData, onClose }: ReceiptModalProps) {
     return (

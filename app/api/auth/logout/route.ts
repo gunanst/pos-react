@@ -1,14 +1,15 @@
-// app/api/auth/logout/route.ts
 import { NextResponse } from "next/server";
 
 export async function POST() {
-    const res = NextResponse.json({ message: "Logged out" });
+    const response = NextResponse.json({ message: "Logged out" });
 
-    // Hapus cookie "pos_session"
-    res.cookies.set("pos_session", "", {
+    // Hapus cookie pos_session dengan mengatur expired date
+    response.cookies.set({
+        name: "pos_session",
+        value: "",
         path: "/",
-        expires: new Date(0),
+        expires: new Date(0), // expire segera
     });
 
-    return res;
+    return response;
 }

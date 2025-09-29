@@ -1,11 +1,13 @@
+// /middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
+// Middleware untuk proteksi route dan role-based akses
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Daftar path publik yang boleh diakses tanpa login
+  // Daftar path publik yang boleh diakses tanpa token
   const publicPaths = [
     "/login",
     "/api",
@@ -13,23 +15,22 @@ export async function middleware(req: NextRequest) {
     "/favicon.ico",
     "/robots.txt",
     "/sitemap.xml",
-    "/uploads",
+    "/uploads"
   ];
 
-  // Jika path termasuk public, langsung lanjut
-  if (publicPaths.some(path => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
+  // Cek apakah path termasuk publik
+  const isPublic = publicPaths.some((path) => pathname.startsWith(path));
+  if (isPublic) return NextResponse.next(); // Langsung lanjutkan request
 
   // Ambil token dari cookie
   const token = req.cookies.get("pos_session")?.value;
   if (!token) {
-    // Redirect ke login kalau token tidak ada
+    // Jika tidak ada token, redirect ke login
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   try {
-    // Verifikasi token JWT
+    // Verifikasi token dengan secret JWT
     const { payload } = await jwtVerify(
       token,
       new TextEncoder().encode(process.env.JWT_SECRET!)
@@ -37,26 +38,22 @@ export async function middleware(req: NextRequest) {
 
     const role = payload.role as string;
 
-    // Jika role KASIR, batasi akses hanya ke /dashboard/sales dan subpathnya
-    if (role === "KASIR") {
-      if (!pathname.startsWith("/dashboard/sales")) {
-        return NextResponse.redirect(new URL("/dashboard/sales", req.url));
-      }
+    // Jika role KASIR dan mencoba akses selain /dashboard/sales, redirect ke halaman akses ditolak
+    if (role === "KASIR" && !pathname.startsWith("/dashboard/sales")) {
+      return NextResponse.redirect(new URL("/access-denied", req.url));
     }
 
-    // Jika ADMIN atau role lain, bebas akses
+    // Jika lolos pengecekan, lanjutkan request
     return NextResponse.next();
-  } catch (error) {
-    // Jika error verifikasi token, redirect ke login
-    console.error("Middleware JWT verify error:", error);
+  } catch {
+    // Jika token tidak valid, redirect ke login
     return NextResponse.redirect(new URL("/login", req.url));
   }
 }
 
-// Konfigurasi middleware untuk proteksi semua route kecuali yang sudah didefinisikan di publicPaths
+// Konfigurasi middleware untuk semua route kecuali yang dikecualikan
 export const config = {
   matcher: [
-    // Proteksi semua kecuali folder dan file statis, login, dan api publik
-    "/((?!api|_next/static|_next/image|favicon.ico|login|robots.txt|sitemap.xml|uploads).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|login|robots.txt|sitemap.xml|uploads).*)"
   ],
 };
