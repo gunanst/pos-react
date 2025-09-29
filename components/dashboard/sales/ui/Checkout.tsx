@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, startTransition } from "react";
-import { createSaleAction } from "../../../../app/actions/sales/actions";
+import { useEffect, useState, startTransition } from "react";
+import { createSaleAction } from "@/app/actions/sales/actions";
 import { ReceiptItem } from "@/lib/receipt";
-import CheckoutModal from "../../../../components/CheckoutModal";
-import ReceiptModal from "../../../../components/ReceiptModal";
+import CheckoutModal from "@/components/CheckoutModal";
+import ReceiptModal from "@/components/ReceiptModal";
 
 type Product = {
   id: number;
@@ -38,13 +38,20 @@ export default function Checkout({ products, user }: CheckoutProps) {
   const [cart, setCart] = useState<{ id: number; name: string; price: number; qty: number }[]>([]);
   const [cash, setCash] = useState<number>(0);
   const [message, setMessage] = useState<string | null>(null);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false); // langsung tampil saat halaman dibuka
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const cashierName = user?.name || "Kasir";
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const change = cash - total;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth < 768);
+    }
+  }, []);
 
   function addToCart(product: Product) {
     if (product.stock <= 0) {
@@ -104,32 +111,23 @@ export default function Checkout({ products, user }: CheckoutProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="fixed bottom-4 right-4 z-40">
-        {cart.length > 0 && (
-          <button
-            onClick={() => setShowCheckout(true)}
-            className="bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg text-lg"
-          >
-            🛒 {cart.reduce((s, i) => s + i.qty, 0)} | Rp{total.toLocaleString("id-ID")}
-          </button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <>
+      {/* Produk */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
         {products.map((p) => (
           <button
             key={p.id}
             onClick={() => addToCart(p)}
-            className="bg-white shadow rounded p-4 text-left flex flex-col hover:bg-gray-50 transition"
+            className="bg-white rounded-lg shadow hover:shadow-md transition-all p-3 text-left"
           >
-            <h3 className="font-semibold">{p.name}</h3>
+            <h3 className="font-semibold text-gray-700">{p.name}</h3>
             <p className="text-sm text-gray-500">Rp{p.price.toLocaleString("id-ID")}</p>
             <span className="text-xs text-gray-400">Stok: {p.stock}</span>
           </button>
         ))}
       </div>
 
+      {/* Modal Checkout */}
       {showCheckout && (
         <CheckoutModal
           cart={cart}
@@ -146,9 +144,10 @@ export default function Checkout({ products, user }: CheckoutProps) {
         />
       )}
 
+      {/* Nota */}
       {showReceipt && receiptData && (
         <ReceiptModal receiptData={receiptData} onClose={() => setShowReceipt(false)} />
       )}
-    </div>
+    </>
   );
 }

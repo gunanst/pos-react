@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 
 function validateProduct(
+  barcode: string,
   name: string,
   price: number,
   stock: number,
@@ -18,12 +19,13 @@ function validateProduct(
 
 // CREATE
 export async function addProduct(formData: FormData) {
+  const barcode = formData.get("barcode")?.toString() || ""
   const name = formData.get("name")?.toString() || "";
   const price = Number(formData.get("price"));
   const stock = Number(formData.get("stock"));
   const imageFile = formData.get("image") as File | null;
 
-  const error = validateProduct(name, price, stock);
+  const error = validateProduct(barcode, name, price, stock);
   if (error) return { error };
 
   let imagePath: string | null = null;
@@ -41,6 +43,7 @@ export async function addProduct(formData: FormData) {
 
   await prisma.product.create({
     data: {
+      barcode,
       name,
       price,
       stock,
@@ -56,12 +59,13 @@ export async function addProduct(formData: FormData) {
 
 // UPDATE
 export async function updateProduct(id: number, formData: FormData) {
+  const barcode = formData.get("barcode")?.toString() || ""
   const name = formData.get("name")?.toString() || "";
   const price = Number(formData.get("price"));
   const stock = Number(formData.get("stock"));
   const imageFile = formData.get("image") as File | null;
 
-  const error = validateProduct(name, price, stock);
+  const error = validateProduct(barcode, name, price, stock);
   if (error) return { error };
 
   let imagePath: string | undefined = undefined;
@@ -81,6 +85,7 @@ export async function updateProduct(id: number, formData: FormData) {
   await prisma.product.update({
     where: { id },
     data: {
+      barcode,
       name,
       price,
       stock,

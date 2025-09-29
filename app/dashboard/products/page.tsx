@@ -21,6 +21,7 @@ export default async function ProductsPage() {
             <tr>
               <th className="p-3 text-left text-sm font-semibold text-gray-700">No</th>
               <th className="p-3 text-left text-sm font-semibold text-gray-700">Image</th>
+              <th className="p-3 text-left text-sm font-semibold text-gray-700">Barcode</th>
               <th className="p-3 text-left text-sm font-semibold text-gray-700">Nama</th>
               <th className="p-3 text-left text-sm font-semibold text-gray-700">Harga</th>
               <th className="p-3 text-left text-sm font-semibold text-gray-700">Stok</th>
@@ -45,6 +46,7 @@ export default async function ProductsPage() {
                   )}
                 </td>
                 <td className="p-3 text-sm">{p.name}</td>
+                <td className="p-3 text-sm">{p.barcode}</td>
                 <td className="p-3 text-sm">Rp{p.price.toLocaleString()}</td>
                 <td className="p-3 text-sm">{p.stock}</td>
                 <td className="p-3 text-sm flex gap-2">

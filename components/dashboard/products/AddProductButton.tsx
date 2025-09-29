@@ -32,12 +32,19 @@ export default function AddProductButton({
             else setOpen(false);
           }}
           className="flex flex-col gap-2"
-          //krn server action ini tidak perlu,
-          //encType="multipart/form-data"
+        //krn server action ini tidak perlu,
+        //encType="multipart/form-data"
         >
           <input
             name="name"
             placeholder="Nama produk"
+            className="border px-2 py-1"
+            required
+          />
+
+          <input
+            name="barcode"
+            placeholder="Barcode Produk"
             className="border px-2 py-1"
             required
           />

@@ -7,7 +7,7 @@ export default function EditProductButton({
   product,
   updateAction,
 }: {
-  product: { id: number; name: string; price: number; stock: number };
+  product: { id: number; barcode: string; name: string; price: number; stock: number };
   updateAction: (
     id: number,
     formData: FormData,
@@ -35,6 +35,12 @@ export default function EditProductButton({
           }}
           className="flex flex-col gap-2"
         >
+          <input
+            name="barcode"
+            defaultValue={product.barcode}
+            className="border px-2 py-1"
+            required
+          />
           <input
             name="name"
             defaultValue={product.name}

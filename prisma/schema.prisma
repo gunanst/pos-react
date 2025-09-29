@@ -9,11 +9,13 @@ datasource db {
 }
 
 model Product {
-  id    Int        @id @default(autoincrement())
-  name  String
-  price Int        @default(0)
-  stock Int        @default(0)
-  image String? // simpan path gambar
+  id      Int     @id @default(autoincrement())
+  name    String
+  price   Int     @default(0)
+  stock   Int     @default(0)
+  image   String? // simpan path 
+  barcode String  @unique
+
   sales SaleItem[]
 }
 
