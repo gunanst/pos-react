@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, startTransition } from "react";
+import { useState, startTransition } from "react";
 import { createSaleAction } from "@/app/actions/sales/actions";
 import { ReceiptItem } from "@/lib/receipt";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -41,17 +41,10 @@ export default function Checkout({ products, user }: CheckoutProps) {
   const [showCheckout, setShowCheckout] = useState(false); // langsung tampil saat halaman dibuka
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   const cashierName = user?.name || "Kasir";
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const change = cash - total;
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsMobile(window.innerWidth < 768);
-    }
-  }, []);
 
   function addToCart(product: Product) {
     if (product.stock <= 0) {

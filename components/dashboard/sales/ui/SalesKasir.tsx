@@ -31,11 +31,21 @@ type CartItem = {
     qty: number;
 };
 
+type ReceiptData = {
+    items: CartItem[];
+    total: number;
+    cash: number;
+    change: number;
+    cashierName: string;
+    datetime: string;
+    receiptNumber: string;
+} | null;
+
 export default function SalesKasir({ products, user }: Props) {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [cash, setCashAction] = useState(0);
     const [message, setMessageAction] = useState<string | null>(null);
-    const [receiptData, setReceiptData] = useState<any>(null);
+    const [receiptData, setReceiptData] = useState<ReceiptData>(null);
     const [showCartModal, setShowCartModal] = useState(false);
 
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -133,9 +143,7 @@ export default function SalesKasir({ products, user }: Props) {
                                 Rp{p.price.toLocaleString("id-ID")}
                             </div>
                             <div
-                                className={`text-sm font-medium ${p.stock > 0
-                                    ? "text-green-600"
-                                    : "text-red-500"
+                                className={`text-sm font-medium ${p.stock > 0 ? "text-green-600" : "text-red-500"
                                     }`}
                             >
                                 Stok: {p.stock}

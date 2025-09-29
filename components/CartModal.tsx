@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
 type CartItem = {
@@ -56,12 +56,32 @@ export default function CartModal({
     const barcodeRef = useRef<HTMLInputElement>(null);
     const scannerRef = useRef<HTMLDivElement>(null);
 
+    // Fokuskan input barcode saat modal muncul
     useEffect(() => {
         if (show) {
             barcodeRef.current?.focus();
         }
     }, [show]);
 
+    // Buat handleScan stabil dengan useCallback
+    const handleScan = useCallback(
+        (code: string) => {
+            const trimmedCode = code.trim();
+            if (!trimmedCode) return;
+
+            const product = products.find((p) => p.barcode === trimmedCode);
+            if (!product) {
+                setMessageAction("Produk tidak ditemukan.");
+                return;
+            }
+            addToCartAction(product);
+            setBarcode("");
+            barcodeRef.current?.focus();
+        },
+        [products, addToCartAction, setMessageAction]
+    );
+
+    // Setup scanner QR hanya sekali saat show=true dan scanner belum ready
     useEffect(() => {
         if (show && !scannerReady && scannerRef.current) {
             const scanner = new Html5QrcodeScanner(
@@ -75,26 +95,18 @@ export default function CartModal({
                     setBarcode(decodedText);
                     handleScan(decodedText);
                 },
-                () => { }
+                () => {
+                    // error callback kosong
+                }
             );
 
             setScannerReady(true);
         }
-    }, [show, scannerReady]);
-
-    const handleScan = (code: string = barcode) => {
-        const product = products.find((p) => p.barcode === code.trim());
-        if (!product) {
-            setMessageAction("Produk tidak ditemukan.");
-            return;
-        }
-        addToCartAction(product);
-        setBarcode("");
-        barcodeRef.current?.focus();
-    };
+    }, [show, scannerReady, handleScan]);
 
     if (!show) return null;
 
+    // Filter produk untuk autocomplete hasil scan / input manual
     const filteredProducts = products.filter((p) =>
         p.barcode.toLowerCase().includes(barcode.toLowerCase()) ||
         p.name.toLowerCase().includes(barcode.toLowerCase())
@@ -115,7 +127,7 @@ export default function CartModal({
                         type="text"
                         value={barcode}
                         onChange={(e) => setBarcode(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleScan()}
+                        onKeyDown={(e) => e.key === "Enter" && handleScan(barcode)}
                         placeholder="Scan barcode atau ketik nama produk..."
                         className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none transition"
                     />
@@ -186,6 +198,7 @@ export default function CartModal({
                                     onClick={() => removeItemAction(item.id)}
                                     className="text-red-500 hover:text-red-700 font-bold text-xl"
                                     title="Hapus"
+                                    aria-label={`Hapus ${item.name} dari keranjang`}
                                 >
                                     ×
                                 </button>
@@ -201,8 +214,11 @@ export default function CartModal({
                         <span>Rp{total.toLocaleString("id-ID")}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <label className="mr-2">Tunai:</label>
+                        <label htmlFor="cash-input" className="mr-2">
+                            Tunai:
+                        </label>
                         <input
+                            id="cash-input"
                             type="number"
                             min={0}
                             value={cash}
@@ -228,8 +244,8 @@ export default function CartModal({
                     <button
                         onClick={handleCheckoutAction}
                         className={`px-4 py-2 rounded-md transition text-white ${cart.length === 0
-                            ? "bg-blue-400 cursor-not-allowed"
-                            : "bg-blue-600 hover:bg-blue-700"
+                                ? "bg-blue-400 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700"
                             }`}
                         disabled={cart.length === 0}
                     >
